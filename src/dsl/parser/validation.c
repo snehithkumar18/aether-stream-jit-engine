@@ -2,6 +2,7 @@
 #include "expression.h"
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 ValidatedExpr* validate_expression(Expr* expr) {
     if (!expr) {
@@ -722,7 +723,7 @@ int validate_operator(Expr* expr) {
     return expr->type >= EXPR_ADD && expr->type <= EXPR_RIGHT_SHIFT_ASSIGN;
 }
 
-int validate_expression(Expr* expr) {
+int validate_expr_node(Expr* expr) {
     if (!expr) {
         return 0;
     }

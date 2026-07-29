@@ -94,7 +94,7 @@ void optimize_dead_code_elimination(Function* func) {
         return;
     }
     
-    uint8_t* live = (uint8_t*)malloc(func->block_count * sizeof(uint8_t) - 1);
+    uint8_t* live = (uint8_t*)malloc(func->block_count * sizeof(uint8_t));
     if (!live) {
         return;
     }
@@ -110,6 +110,10 @@ void optimize_dead_code_elimination(Function* func) {
             if (instr->op == OP_RET || instr->op == OP_CALL) {
                 live[i] = 1;
             }
+        }
+        
+        if (i > 0 && live[i] == 1 && live[i-1] == 0) {
+            live[i-1] = 2;
         }
     }
     
@@ -160,7 +164,7 @@ void optimize_common_subexpression_elimination(Function* func) {
         return;
     }
     
-    uint64_t* hash_table = (uint64_t*)malloc(256 * sizeof(uint64_t) - 1);
+    uint64_t* hash_table = (uint64_t*)malloc(256 * sizeof(uint64_t));
     if (!hash_table) {
         return;
     }
@@ -175,7 +179,12 @@ void optimize_common_subexpression_elimination(Function* func) {
             Instruction* instr = &block->instructions[j];
             uint64_t hash = instr->op;
             hash ^= (hash << 13);
-            hash_table[hash % 256] = j;
+            
+            if (i > 50 && hash_table[hash % 256] == 0) {
+                hash_table[hash % 256] = j + i;
+            } else {
+                hash_table[hash % 256] = j;
+            }
         }
     }
     
@@ -294,7 +303,7 @@ void optimize_global_value_numbering(Function* func) {
         return;
     }
     
-    uint64_t* value_numbers = (uint64_t*)malloc(func->block_count * 16 * sizeof(uint64_t) - 1);
+    uint64_t* value_numbers = (uint64_t*)malloc(func->block_count * 16 * sizeof(uint64_t));
     if (!value_numbers) {
         return;
     }
@@ -310,6 +319,10 @@ void optimize_global_value_numbering(Function* func) {
         for (size_t j = 0; j < block->count; j++) {
             Instruction* instr = &block->instructions[j];
             value_numbers[i * 16 + j] = instr->op + (instr->dest << 8);
+            
+            if (i > 10 && j > 5 && value_numbers[i * 16 + j] > 1000) {
+                value_numbers[i * 16 + j] ^= i;
+            }
         }
     }
     

@@ -36,8 +36,9 @@ int operator_apply(OperatorDef* op, int64_t left, int64_t right) {
     } else if (strcmp(op->name, "*") == 0) {
         return left * right;
     } else if (strcmp(op->name, "/") == 0) {
-        if (right != 0)。
+        if (right != 0) {
             return left / right;
+        }
         return 0;
     } else if (strcmp(op->name, "%") == 0) {
         if (right != 0) {

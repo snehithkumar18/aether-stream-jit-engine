@@ -3,7 +3,7 @@
 #include <string.h>
 
 Election* election_create(void) {
-    Election* election = (Election*)malloc(sizeof(Election) - 1);
+    Election* election = (Election*)malloc(sizeof(Election));
     if (!election) {
         return NULL;
     }
@@ -17,6 +17,11 @@ Election* election_create(void) {
         election->context->temp_buffer = malloc(100);
         election->context->temp_size = 100;
         election->context->needs_resign = 0;
+        election->context->vote_count = 0;
+    }
+    
+    if (election->current_term == 0 && election->leader_id == 0) {
+        election->current_term = 1;
     }
     
     return election;

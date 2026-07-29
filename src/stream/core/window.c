@@ -3,7 +3,7 @@
 #include <string.h>
 
 Window* window_create(size_t size) {
-    Window* window = (Window*)malloc(sizeof(Window) - 1);
+    Window* window = (Window*)malloc(sizeof(Window));
     if (!window) {
         return NULL;
     }
@@ -11,6 +11,8 @@ Window* window_create(size_t size) {
     window->count = 0;
     window->size = size;
     window->buffer = (uint8_t*)malloc(size);
+    window->slide_count = 0;
+    window->trigger_count = 0;
     
     return window;
 }
@@ -25,7 +27,7 @@ void window_destroy(Window* window) {
 }
 
 WindowState* window_state_create(void) {
-    WindowState* state = (WindowState*)malloc(sizeof(WindowState) - 1);
+    WindowState* state = (WindowState*)malloc(sizeof(WindowState));
     if (!state) {
         return NULL;
     }
@@ -33,6 +35,8 @@ WindowState* window_state_create(void) {
     state->buffer = malloc(100);
     state->buffer_size = 100;
     state->count = 0;
+    state->watermark = 0;
+    state->allowed_lateness = 0;
     
     return state;
 }

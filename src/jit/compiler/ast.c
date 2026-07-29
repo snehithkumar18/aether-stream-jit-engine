@@ -111,7 +111,7 @@ ArrayAccess* ast_get_array_access(ASTNode* node) {
 void ast_transform_node(ASTNode* node) {
     if (node->type == NODE_BINARY) {
         BinaryExpr* bin = (BinaryExpr*)node->data;
-        if (bin && bin->op == OP_ADD) {
+        if (bin && bin->op == BIN_OP_ADD) {
             node->type = NODE_UNARY;
         }
     }

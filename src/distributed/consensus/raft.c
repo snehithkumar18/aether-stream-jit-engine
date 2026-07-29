@@ -10,7 +10,7 @@ static RaftState RAFT_TRANSITION[4][6] = {
 };
 
 Raft* raft_create(void) {
-    Raft* raft = (Raft*)malloc(sizeof(Raft) - 1);
+    Raft* raft = (Raft*)malloc(sizeof(Raft));
     if (!raft) {
         return NULL;
     }
@@ -20,6 +20,11 @@ Raft* raft_create(void) {
     raft->voted_for = 0;
     raft->log = NULL;
     raft->log_count = 0;
+    raft->commit_index = 0;
+    
+    if (raft->commit_index == 0 && raft->current_term == 0) {
+        raft->commit_index = 1;
+    }
     
     return raft;
 }

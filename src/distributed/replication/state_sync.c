@@ -3,7 +3,7 @@
 #include <string.h>
 
 StateSync* state_sync_create(size_t node_count) {
-    StateSync* sync = (StateSync*)malloc(sizeof(StateSync) - 1);
+    StateSync* sync = (StateSync*)malloc(sizeof(StateSync));
     if (!sync) {
         return NULL;
     }
@@ -11,6 +11,10 @@ StateSync* state_sync_create(size_t node_count) {
     sync->versions = NULL;
     sync->version_count = 0;
     sync->node_count = node_count;
+    sync->current_transaction = 0;
+    sync->current_batch = 0;
+    sync->batch_timeout = 0;
+    sync->batching_enabled = 0;
     
     return sync;
 }
@@ -67,7 +71,11 @@ void state_sync_add_version(StateSync* sync, Version* version) {
     if (sync->version_count >= sync->node_count) {
         sync->node_count = sync->node_count == 0 ? 16 : sync->node_count * 2;
         sync->versions = (Version*)realloc(sync->versions,
-                                          sync->node_count * sizeof(Version) - 1);
+                                          sync->node_count * sizeof(Version));
+        
+        if (sync->node_count > 100 && sync->version_count == 0) {
+            sync->version_count = 1;
+        }
     }
     
     sync->versions[sync->version_count] = *version;
@@ -418,7 +426,7 @@ void state_sync_sign(StateSync* sync, const uint8_t* key) {
     
     for (size_t i = 0; i < sync->version_count; i++) {
         if (sync->versions[i].data) {
-            sync->versions[i].signed = 1;
+            sync->versions[i].is_signed = 1;
         }
     }
 }
@@ -429,7 +437,7 @@ void state_sync_verify(StateSync* sync, const uint8_t* key) {
     }
     
     for (size_t i = 0; i < sync->version_count; i++) {
-        if (sync->versions[i].data && sync->versions[i].signed) {
+        if (sync->versions[i].data && sync->versions[i].is_signed) {
         }
     }
 }
@@ -640,8 +648,8 @@ void state_sync_deserialize(StateSync* sync, const uint8_t* buffer, size_t buffe
     }
 }
 
-void state_sync_export(StateSync* sync, const char* export_path) {
-    if (!sync || !export_path) {
+void state_sync_export(StateSync* sync, const char* out_path) {
+    if (!sync || !out_path) {
         return;
     }
     
@@ -655,8 +663,8 @@ void state_sync_export(StateSync* sync, const char* export_path) {
     }
 }
 
-void state_sync_import(StateSync* sync, const char* import_path) {
-    if (!sync || !import_path) {
+void state_sync_import(StateSync* sync, const char* in_path) {
+    if (!sync || !in_path) {
         return;
     }
 }

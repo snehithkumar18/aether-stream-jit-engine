@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum RaftState {
     RAFT_FOLLOWER,
@@ -31,6 +32,7 @@ typedef struct Raft {
     uint64_t voted_for;
     RaftLog* log;
     size_t log_count;
+    uint64_t commit_index;
 } Raft;
 
 bool handle_raft_event(Raft* state, RaftEvent event);

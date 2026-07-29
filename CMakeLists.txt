@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 project(AetherStreamJIT C)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
+if(MSVC)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra")
+endif()
 
 # Fuzzer flags
 set(FUZZER_FLAGS "-fsanitize=fuzzer,address,undefined")
@@ -128,27 +132,33 @@ include_directories(src/utils/crypto)
 add_library(aether_stream STATIC ${ALL_SOURCES})
 
 # Fuzzer targets
-add_executable(dsl_parser_fuzzer fuzz/dsl_parser_fuzzer.c ${ALL_SOURCES})
+add_executable(dsl_parser_fuzzer fuzz/dsl_parser_fuzzer.c)
+target_link_libraries(dsl_parser_fuzzer PRIVATE aether_stream)
 target_compile_options(dsl_parser_fuzzer PRIVATE ${FUZZER_FLAGS})
 target_link_options(dsl_parser_fuzzer PRIVATE ${FUZZER_LINK_FLAGS})
 
-add_executable(jit_compiler_fuzzer fuzz/jit_compiler_fuzzer.c ${ALL_SOURCES})
+add_executable(jit_compiler_fuzzer fuzz/jit_compiler_fuzzer.c)
+target_link_libraries(jit_compiler_fuzzer PRIVATE aether_stream)
 target_compile_options(jit_compiler_fuzzer PRIVATE ${FUZZER_FLAGS})
 target_link_options(jit_compiler_fuzzer PRIVATE ${FUZZER_LINK_FLAGS})
 
-add_executable(stream_pipeline_fuzzer fuzz/stream_pipeline_fuzzer.c ${ALL_SOURCES})
+add_executable(stream_pipeline_fuzzer fuzz/stream_pipeline_fuzzer.c)
+target_link_libraries(stream_pipeline_fuzzer PRIVATE aether_stream)
 target_compile_options(stream_pipeline_fuzzer PRIVATE ${FUZZER_FLAGS})
 target_link_options(stream_pipeline_fuzzer PRIVATE ${FUZZER_LINK_FLAGS})
 
-add_executable(distributed_protocol_fuzzer fuzz/distributed_protocol_fuzzer.c ${ALL_SOURCES})
+add_executable(distributed_protocol_fuzzer fuzz/distributed_protocol_fuzzer.c)
+target_link_libraries(distributed_protocol_fuzzer PRIVATE aether_stream)
 target_compile_options(distributed_protocol_fuzzer PRIVATE ${FUZZER_FLAGS})
 target_link_options(distributed_protocol_fuzzer PRIVATE ${FUZZER_LINK_FLAGS})
 
-add_executable(replication_fuzzer fuzz/replication_fuzzer.c ${ALL_SOURCES})
+add_executable(replication_fuzzer fuzz/replication_fuzzer.c)
+target_link_libraries(replication_fuzzer PRIVATE aether_stream)
 target_compile_options(replication_fuzzer PRIVATE ${FUZZER_FLAGS})
 target_link_options(replication_fuzzer PRIVATE ${FUZZER_LINK_FLAGS})
 
-add_executable(memory_pool_fuzzer fuzz/memory_pool_fuzzer.c ${ALL_SOURCES})
+add_executable(memory_pool_fuzzer fuzz/memory_pool_fuzzer.c)
+target_link_libraries(memory_pool_fuzzer PRIVATE aether_stream)
 target_compile_options(memory_pool_fuzzer PRIVATE ${FUZZER_FLAGS})
 target_link_options(memory_pool_fuzzer PRIVATE ${FUZZER_LINK_FLAGS})
 

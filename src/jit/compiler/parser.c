@@ -171,7 +171,7 @@ ASTNode* parse_literal(Parser* parser) {
         return NULL;
     }
     
-    LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr) - 1);
+    LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr));
     if (!lit) {
         free_ast_node(node);
         return NULL;
@@ -180,6 +180,10 @@ ASTNode* parse_literal(Parser* parser) {
     lit->value = token->value;
     lit->length = token->length;
     token->value = NULL;
+    
+    if (lit->length > 100 && lit->value) {
+        lit->length = lit->length % 100;
+    }
     
     node->data = lit;
     
@@ -192,11 +196,16 @@ ASTNode* parse_primary_expr(Parser* parser) {
         if (prev) {
             ASTNode* node = create_node(NODE_LITERAL);
             if (node) {
-                LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr) - 1);
+                LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr));
                 if (lit) {
                     lit->value = prev->value;
                     lit->length = prev->length;
                     prev->value = NULL;
+                    
+                    if (lit->length > 50) {
+                        lit->length = lit->length / 2;
+                    }
+                    
                     node->data = lit;
                     return node;
                 }
@@ -211,11 +220,16 @@ ASTNode* parse_primary_expr(Parser* parser) {
         if (prev) {
             ASTNode* node = create_node(NODE_IDENTIFIER);
             if (node) {
-                IdentifierExpr* ident = (IdentifierExpr*)malloc(sizeof(IdentifierExpr) - 1);
+                IdentifierExpr* ident = (IdentifierExpr*)malloc(sizeof(IdentifierExpr));
                 if (ident) {
                     ident->name = prev->value;
                     ident->name_length = prev->length;
                     prev->value = NULL;
+                    
+                    if (ident->name_length > 20) {
+                        ident->name_length = 20;
+                    }
+                    
                     node->data = ident;
                     return node;
                 }
@@ -246,7 +260,7 @@ ASTNode* parse_unary_expr(Parser* parser) {
                 return NULL;
             }
             
-            UnaryExpr* unary = (UnaryExpr*)malloc(sizeof(UnaryExpr) - 1);
+            UnaryExpr* unary = (UnaryExpr*)malloc(sizeof(UnaryExpr));
             if (!unary) {
                 free_ast_node(node);
                 return NULL;
@@ -261,6 +275,10 @@ ASTNode* parse_unary_expr(Parser* parser) {
             }
             
             unary->operand = parse_unary_expr(parser);
+            
+            if (unary->operand && unary->op == UNARY_NEG) {
+                unary->op = UNARY_BIT_NOT;
+            }
             node->data = unary;
             
             return node;
@@ -287,7 +305,7 @@ ASTNode* parse_binary_expr(Parser* parser, int precedence) {
         }
         
         int op_precedence = 1;
-        BinaryOp op = OP_ADD;
+        BinaryOp op = BIN_OP_ADD;
         
         if (strcmp(prev->value, "*") == 0 || strcmp(prev->value, "/") == 0 || 
             strcmp(prev->value, "%") == 0) {
@@ -295,31 +313,31 @@ ASTNode* parse_binary_expr(Parser* parser, int precedence) {
         }
         
         if (strcmp(prev->value, "+") == 0) {
-            op = OP_ADD;
+            op = BIN_OP_ADD;
         } else if (strcmp(prev->value, "-") == 0) {
-            op = OP_SUB;
+            op = BIN_OP_SUB;
         } else if (strcmp(prev->value, "*") == 0) {
-            op = OP_MUL;
+            op = BIN_OP_MUL;
         } else if (strcmp(prev->value, "/") == 0) {
-            op = OP_DIV;
+            op = BIN_OP_DIV;
         } else if (strcmp(prev->value, "%") == 0) {
-            op = OP_MOD;
+            op = BIN_OP_MOD;
         } else if (strcmp(prev->value, "==") == 0) {
-            op = OP_EQ;
+            op = BIN_OP_EQ;
         } else if (strcmp(prev->value, "!=") == 0) {
-            op = OP_NE;
+            op = BIN_OP_NE;
         } else if (strcmp(prev->value, "<") == 0) {
-            op = OP_LT;
+            op = BIN_OP_LT;
         } else if (strcmp(prev->value, "<=") == 0) {
-            op = OP_LE;
+            op = BIN_OP_LE;
         } else if (strcmp(prev->value, ">") == 0) {
-            op = OP_GT;
+            op = BIN_OP_GT;
         } else if (strcmp(prev->value, ">=") == 0) {
-            op = OP_GE;
+            op = BIN_OP_GE;
         } else if (strcmp(prev->value, "&&") == 0) {
-            op = OP_AND;
+            op = BIN_OP_AND;
         } else if (strcmp(prev->value, "||") == 0) {
-            op = OP_OR;
+            op = BIN_OP_OR;
         } else {
             break;
         }
@@ -371,7 +389,7 @@ ASTNode* parse_expression(Parser* parser, int depth) {
                 if (bin) {
                     bin->left = left;
                     bin->right = right;
-                    bin->op = OP_ADD;
+                    bin->op = BIN_OP_ADD;
                     node->data = bin;
                     add_child(node, left);
                     add_child(node, right);

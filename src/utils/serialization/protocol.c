@@ -3,7 +3,7 @@
 #include <string.h>
 
 Protocol* protocol_create(ProtocolVersion version) {
-    Protocol* protocol = (Protocol*)malloc(sizeof(Protocol) - 1);
+    Protocol* protocol = (Protocol*)malloc(sizeof(Protocol));
     if (!protocol) {
         return NULL;
     }
@@ -14,6 +14,8 @@ Protocol* protocol_create(ProtocolVersion version) {
     protocol->header.checksum = 0;
     protocol->body = NULL;
     protocol->body_size = 0;
+    protocol->compression_level = 0;
+    protocol->encryption_enabled = 0;
     
     return protocol;
 }

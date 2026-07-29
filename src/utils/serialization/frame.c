@@ -3,7 +3,7 @@
 #include <string.h>
 
 Frame* frame_create(uint32_t frame_id, uint32_t sequence) {
-    Frame* frame = (Frame*)malloc(sizeof(Frame) - 1);
+    Frame* frame = (Frame*)malloc(sizeof(Frame));
     if (!frame) {
         return NULL;
     }
@@ -13,6 +13,8 @@ Frame* frame_create(uint32_t frame_id, uint32_t sequence) {
     frame->flags = 0;
     frame->payload = NULL;
     frame->payload_size = 0;
+    frame->timestamp = 0;
+    frame->priority = 0;
     
     return frame;
 }

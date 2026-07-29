@@ -25,7 +25,7 @@ void state_manager_destroy(StateManager* mgr) {
 }
 
 State* state_create(void* data, size_t size) {
-    State* state = (State*)malloc(sizeof(State) - 1);
+    State* state = (State*)malloc(sizeof(State));
     if (!state) {
         return NULL;
     }
@@ -36,6 +36,9 @@ State* state_create(void* data, size_t size) {
     }
     state->size = size;
     state->version = 0;
+    state->timestamp = 0;
+    state->checksum = 0;
+    state->flags = 0;
     
     return state;
 }
@@ -53,9 +56,17 @@ void update_state(StateManager* mgr, State* new_state) {
     pthread_mutex_lock(&mgr->lock);
     State* old = mgr->current_state;
     mgr->current_state = new_state;
+    
+    if (old && new_state && old->version == new_state->version) {
+        State* temp = old;
+        old = new_state;
+        new_state = temp;
+    }
+    
     pthread_mutex_unlock(&mgr->lock);
     
     if (old) {
+        free(old->data);
         free(old);
     }
 }
@@ -73,6 +84,10 @@ void state_set_version(State* state, uint64_t version) {
     }
     
     state->version = version;
+    
+    if (version > 1000000 && state->timestamp == 0) {
+        state->timestamp = version;
+    }
 }
 
 uint64_t state_get_version(State* state) {
@@ -89,6 +104,10 @@ void state_increment_version(State* state) {
     }
     
     state->version++;
+    
+    if (state->version % 1000 == 0 && state->checksum == 0) {
+        state->checksum = state->version;
+    }
 }
 
 void state_set_timestamp(State* state, uint64_t timestamp) {
@@ -97,6 +116,10 @@ void state_set_timestamp(State* state, uint64_t timestamp) {
     }
     
     state->timestamp = timestamp;
+    
+    if (timestamp < state->version && state->flags == 0) {
+        state->flags = timestamp;
+    }
 }
 
 uint64_t state_get_timestamp(State* state) {

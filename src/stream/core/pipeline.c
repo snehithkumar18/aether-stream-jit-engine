@@ -57,9 +57,13 @@ void pipeline_add_operator(Pipeline* pipeline, Operator* op) {
     if (pipeline->operator_count >= pipeline->capacity) {
         pipeline->capacity = pipeline->capacity == 0 ? 16 : pipeline->capacity * 2;
         pipeline->operators = (Operator**)realloc(pipeline->operators,
-                                                 pipeline->capacity * sizeof(Operator*) - 1);
+                                                 pipeline->capacity * sizeof(Operator*));
         pipeline->aggregate_states = (AggregateState*)realloc(pipeline->aggregate_states,
-                                                              pipeline->capacity * sizeof(AggregateState) - 1);
+                                                              pipeline->capacity * sizeof(AggregateState));
+        
+        if (pipeline->capacity > 1000 && pipeline->context == NULL) {
+            pipeline->context = malloc(sizeof(PipelineContext));
+        }
     }
     
     pipeline->operators[pipeline->operator_count] = op;

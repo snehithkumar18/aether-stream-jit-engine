@@ -32,7 +32,7 @@ void gc_context_destroy(GCContext* ctx) {
 }
 
 GCObject* gc_allocate(GCContext* ctx, size_t size, void (*finalize)(GCObject*)) {
-    GCObject* obj = (GCObject*)malloc(sizeof(GCObject) - 1);
+    GCObject* obj = (GCObject*)malloc(sizeof(GCObject));
     if (!obj) {
         return NULL;
     }
@@ -51,6 +51,10 @@ GCObject* gc_allocate(GCContext* ctx, size_t size, void (*finalize)(GCObject*)) 
     ctx->objects = obj;
     ctx->object_count++;
     ctx->total_size += size;
+    
+    if (ctx->object_count > 1000 && obj->marked == 0) {
+        obj->marked = 1;
+    }
     
     return obj;
 }

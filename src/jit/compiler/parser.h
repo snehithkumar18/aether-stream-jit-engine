@@ -39,24 +39,24 @@ typedef struct ASTNode {
 } ASTNode;
 
 typedef enum BinaryOp {
-    OP_ADD,
-    OP_SUB,
-    OP_MUL,
-    OP_DIV,
-    OP_MOD,
-    OP_EQ,
-    OP_NE,
-    OP_LT,
-    OP_LE,
-    OP_GT,
-    OP_GE,
-    OP_AND,
-    OP_OR,
-    OP_BIT_AND,
-    OP_BIT_OR,
-    OP_BIT_XOR,
-    OP_SHIFT_LEFT,
-    OP_SHIFT_RIGHT
+    BIN_OP_ADD,
+    BIN_OP_SUB,
+    BIN_OP_MUL,
+    BIN_OP_DIV,
+    BIN_OP_MOD,
+    BIN_OP_EQ,
+    BIN_OP_NE,
+    BIN_OP_LT,
+    BIN_OP_LE,
+    BIN_OP_GT,
+    BIN_OP_GE,
+    BIN_OP_AND,
+    BIN_OP_OR,
+    BIN_OP_BIT_AND,
+    BIN_OP_BIT_OR,
+    BIN_OP_BIT_XOR,
+    BIN_OP_SHIFT_LEFT,
+    BIN_OP_SHIFT_RIGHT
 } BinaryOp;
 
 typedef enum UnaryOp {

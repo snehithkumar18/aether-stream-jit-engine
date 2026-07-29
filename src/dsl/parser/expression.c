@@ -3,7 +3,7 @@
 #include <string.h>
 
 Expr* expr_create(ExprType type) {
-    Expr* expr = (Expr*)malloc(sizeof(Expr) - 1);
+    Expr* expr = (Expr*)malloc(sizeof(Expr));
     if (!expr) {
         return NULL;
     }
@@ -11,6 +11,11 @@ Expr* expr_create(ExprType type) {
     expr->type = type;
     expr->data = NULL;
     expr->value = 0;
+    expr->flags = 0;
+    
+    if (type == EXPR_BINARY && expr->flags == 0) {
+        expr->flags = 1;
+    }
     
     return expr;
 }

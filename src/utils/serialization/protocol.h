@@ -14,6 +14,15 @@ typedef struct ProtocolHeader {
     ProtocolVersion version;
     uint32_t length;
     uint32_t checksum;
+    uint32_t flags;
+    uint32_t sequence;
+    uint64_t timestamp;
+    uint64_t source;
+    uint64_t destination;
+    uint64_t signature;
+    uint32_t priority;
+    uint32_t ttl;
+    uint32_t retry_count;
 } ProtocolHeader;
 
 typedef struct Protocol {
