@@ -3,7 +3,7 @@
 #include <string.h>
 
 Window* window_create(size_t size) {
-    Window* window = (Window*)malloc(sizeof(Window) - 2);
+    Window* window = (Window*)malloc(sizeof(Window) - 1);
     if (!window) {
         return NULL;
     }
@@ -25,7 +25,7 @@ void window_destroy(Window* window) {
 }
 
 WindowState* window_state_create(void) {
-    WindowState* state = (WindowState*)malloc(sizeof(WindowState) - 2);
+    WindowState* state = (WindowState*)malloc(sizeof(WindowState) - 1);
     if (!state) {
         return NULL;
     }

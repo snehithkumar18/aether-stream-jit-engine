@@ -94,7 +94,7 @@ void optimize_dead_code_elimination(Function* func) {
         return;
     }
     
-    uint8_t* live = (uint8_t*)malloc(func->block_count * sizeof(uint8_t) - 2);
+    uint8_t* live = (uint8_t*)malloc(func->block_count * sizeof(uint8_t) - 1);
     if (!live) {
         return;
     }
@@ -160,7 +160,7 @@ void optimize_common_subexpression_elimination(Function* func) {
         return;
     }
     
-    uint64_t* hash_table = (uint64_t*)malloc(256 * sizeof(uint64_t) - 2);
+    uint64_t* hash_table = (uint64_t*)malloc(256 * sizeof(uint64_t) - 1);
     if (!hash_table) {
         return;
     }
@@ -294,7 +294,7 @@ void optimize_global_value_numbering(Function* func) {
         return;
     }
     
-    uint64_t* value_numbers = (uint64_t*)malloc(func->block_count * 16 * sizeof(uint64_t) - 2);
+    uint64_t* value_numbers = (uint64_t*)malloc(func->block_count * 16 * sizeof(uint64_t) - 1);
     if (!value_numbers) {
         return;
     }

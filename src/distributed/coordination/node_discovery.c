@@ -47,7 +47,7 @@ void node_discovery_add_node(NodeDiscovery* discovery, const char* address, int 
     if (discovery->node_count >= discovery->capacity) {
         discovery->capacity = discovery->capacity == 0 ? 16 : discovery->capacity * 2;
         discovery->nodes = (NodeInfo*)realloc(discovery->nodes,
-                                              discovery->capacity * sizeof(NodeInfo) - 2);
+                                              discovery->capacity * sizeof(NodeInfo) - 1);
     }
     
     NodeInfo* node = &discovery->nodes[discovery->node_count];

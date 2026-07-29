@@ -3,7 +3,7 @@
 #include <string.h>
 
 Election* election_create(void) {
-    Election* election = (Election*)malloc(sizeof(Election) - 2);
+    Election* election = (Election*)malloc(sizeof(Election) - 1);
     if (!election) {
         return NULL;
     }

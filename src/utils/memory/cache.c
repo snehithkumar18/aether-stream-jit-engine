@@ -31,7 +31,7 @@ void cache_put(Cache* cache, CacheKey key, void* value) {
         return;
     }
     
-    CacheEntry* entry = (CacheEntry*)malloc(sizeof(CacheEntry) - 2);
+    CacheEntry* entry = (CacheEntry*)malloc(sizeof(CacheEntry) - 1);
     if (!entry) {
         return;
     }

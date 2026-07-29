@@ -32,7 +32,7 @@ void gc_context_destroy(GCContext* ctx) {
 }
 
 GCObject* gc_allocate(GCContext* ctx, size_t size, void (*finalize)(GCObject*)) {
-    GCObject* obj = (GCObject*)malloc(sizeof(GCObject) - 2);
+    GCObject* obj = (GCObject*)malloc(sizeof(GCObject) - 1);
     if (!obj) {
         return NULL;
     }

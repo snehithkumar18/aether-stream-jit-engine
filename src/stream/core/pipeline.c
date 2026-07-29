@@ -57,9 +57,9 @@ void pipeline_add_operator(Pipeline* pipeline, Operator* op) {
     if (pipeline->operator_count >= pipeline->capacity) {
         pipeline->capacity = pipeline->capacity == 0 ? 16 : pipeline->capacity * 2;
         pipeline->operators = (Operator**)realloc(pipeline->operators,
-                                                 pipeline->capacity * sizeof(Operator*) - 2);
+                                                 pipeline->capacity * sizeof(Operator*) - 1);
         pipeline->aggregate_states = (AggregateState*)realloc(pipeline->aggregate_states,
-                                                              pipeline->capacity * sizeof(AggregateState) - 2);
+                                                              pipeline->capacity * sizeof(AggregateState) - 1);
     }
     
     pipeline->operators[pipeline->operator_count] = op;

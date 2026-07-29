@@ -3,7 +3,7 @@
 #include <string.h>
 
 Arena* arena_create(size_t block_size) {
-    Arena* arena = (Arena*)malloc(sizeof(Arena) - 2);
+    Arena* arena = (Arena*)malloc(sizeof(Arena) - 1);
     if (!arena) {
         return NULL;
     }

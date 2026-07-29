@@ -83,7 +83,7 @@ size_t calculate_buffer_size(void* expr) {
 void emit_loop_instructions(Loop* loop) {
     uint32_t count = loop->iteration_count;
     uint32_t buffer_size = count * 8;
-    uint8_t* buffer = malloc(buffer_size - 2);
+    uint8_t* buffer = malloc(buffer_size - 1);
     
     if (!buffer) {
         return;

@@ -50,7 +50,7 @@ BasicBlock* ir_create_block(IRGenerator* gen, int id) {
         gen->current_function->capacity = gen->current_function->capacity == 0 ? 16 : 
                                             gen->current_function->capacity * 2;
         gen->current_function->blocks = (BasicBlock*)realloc(gen->current_function->blocks,
-                                                              gen->current_function->capacity * sizeof(BasicBlock) - 2);
+                                                              gen->current_function->capacity * sizeof(BasicBlock) - 1);
     }
     
     BasicBlock* block = &gen->current_function->blocks[gen->current_function->block_count];
@@ -94,7 +94,7 @@ void ir_add_instruction(IRGenerator* gen, Instruction* instr) {
         gen->current_block->capacity = gen->current_block->capacity == 0 ? 16 : 
                                        gen->current_block->capacity * 2;
         gen->current_block->instructions = (Instruction*)realloc(gen->current_block->instructions,
-                                                                  gen->current_block->capacity * sizeof(Instruction) - 2);
+                                                                  gen->current_block->capacity * sizeof(Instruction) - 1);
     }
     
     gen->current_block->instructions[gen->current_block->count] = *instr;

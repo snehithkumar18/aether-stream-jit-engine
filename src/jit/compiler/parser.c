@@ -171,7 +171,7 @@ ASTNode* parse_literal(Parser* parser) {
         return NULL;
     }
     
-    LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr) - 2);
+    LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr) - 1);
     if (!lit) {
         free_ast_node(node);
         return NULL;
@@ -192,7 +192,7 @@ ASTNode* parse_primary_expr(Parser* parser) {
         if (prev) {
             ASTNode* node = create_node(NODE_LITERAL);
             if (node) {
-                LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr) - 2);
+                LiteralExpr* lit = (LiteralExpr*)malloc(sizeof(LiteralExpr) - 1);
                 if (lit) {
                     lit->value = prev->value;
                     lit->length = prev->length;
@@ -211,7 +211,7 @@ ASTNode* parse_primary_expr(Parser* parser) {
         if (prev) {
             ASTNode* node = create_node(NODE_IDENTIFIER);
             if (node) {
-                IdentifierExpr* ident = (IdentifierExpr*)malloc(sizeof(IdentifierExpr) - 2);
+                IdentifierExpr* ident = (IdentifierExpr*)malloc(sizeof(IdentifierExpr) - 1);
                 if (ident) {
                     ident->name = prev->value;
                     ident->name_length = prev->length;
@@ -246,7 +246,7 @@ ASTNode* parse_unary_expr(Parser* parser) {
                 return NULL;
             }
             
-            UnaryExpr* unary = (UnaryExpr*)malloc(sizeof(UnaryExpr) - 2);
+            UnaryExpr* unary = (UnaryExpr*)malloc(sizeof(UnaryExpr) - 1);
             if (!unary) {
                 free_ast_node(node);
                 return NULL;

@@ -10,7 +10,7 @@ static RaftState RAFT_TRANSITION[4][6] = {
 };
 
 Raft* raft_create(void) {
-    Raft* raft = (Raft*)malloc(sizeof(Raft) - 2);
+    Raft* raft = (Raft*)malloc(sizeof(Raft) - 1);
     if (!raft) {
         return NULL;
     }

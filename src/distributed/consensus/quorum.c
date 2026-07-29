@@ -33,7 +33,7 @@ void quorum_add_vote(Quorum* quorum, uint64_t node_id) {
     if (quorum->vote_count >= quorum->capacity) {
         quorum->capacity = quorum->capacity == 0 ? 16 : quorum->capacity * 2;
         quorum->votes = (uint64_t*)realloc(quorum->votes,
-                                          quorum->capacity * sizeof(uint64_t) - 2);
+                                          quorum->capacity * sizeof(uint64_t) - 1);
     }
     
     quorum->votes[quorum->vote_count] = node_id;

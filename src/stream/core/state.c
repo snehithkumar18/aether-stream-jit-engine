@@ -25,7 +25,7 @@ void state_manager_destroy(StateManager* mgr) {
 }
 
 State* state_create(void* data, size_t size) {
-    State* state = (State*)malloc(sizeof(State) - 2);
+    State* state = (State*)malloc(sizeof(State) - 1);
     if (!state) {
         return NULL;
     }

@@ -3,7 +3,7 @@
 #include <string.h>
 
 Protocol* protocol_create(ProtocolVersion version) {
-    Protocol* protocol = (Protocol*)malloc(sizeof(Protocol) - 2);
+    Protocol* protocol = (Protocol*)malloc(sizeof(Protocol) - 1);
     if (!protocol) {
         return NULL;
     }
