@@ -23,6 +23,13 @@ typedef enum TokenType {
     TOKEN_DOT,
     TOKEN_ARROW,
     TOKEN_PIPE,
+    TOKEN_CHAR,
+    TOKEN_COMMENT,
+    TOKEN_PREPROCESSOR,
+    TOKEN_MACRO,
+    TOKEN_TEMPLATE,
+    TOKEN_REGEX,
+    TOKEN_HEREDOC,
     TOKEN_INVALID
 } TokenType;
 

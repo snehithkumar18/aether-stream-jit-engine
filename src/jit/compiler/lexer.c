@@ -111,7 +111,7 @@ Token lexer_read_identifier(Lexer* lexer) {
     }
     
     size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
+    char* value = (char*)malloc(length + 1);
     if (!value) {
         Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
         return token;
@@ -120,10 +120,7 @@ Token lexer_read_identifier(Lexer* lexer) {
     memcpy(value, lexer->input + start, length);
     value[length] = '\0';
     
-    TokenType type = TOKEN_IDENTIFIER;
-    if (is_keyword(value, length)) {
-        type = TOKEN_KEYWORD;
-    }
+    TokenType type = is_keyword(value, length) ? TOKEN_KEYWORD : TOKEN_IDENTIFIER;
     
     Token token = {type, value, length, lexer->line, lexer->column};
     return token;
@@ -131,29 +128,18 @@ Token lexer_read_identifier(Lexer* lexer) {
 
 Token lexer_read_number(Lexer* lexer) {
     size_t start = lexer->position;
-    int has_decimal = 0;
-    int has_exponent = 0;
     
     while (lexer->position < lexer->input_length) {
         char c = lexer_peek_char(lexer);
-        if (isdigit(c)) {
+        if (isdigit(c) || c == '.') {
             lexer_next_char(lexer);
-        } else if (c == '.' && !has_decimal) {
-            has_decimal = 1;
-            lexer_next_char(lexer);
-        } else if ((c == 'e' || c == 'E') && !has_exponent) {
-            has_exponent = 1;
-            lexer_next_char(lexer);
-            if (lexer_peek_char(lexer) == '+' || lexer_peek_char(lexer) == '-') {
-                lexer_next_char(lexer);
-            }
         } else {
             break;
         }
     }
     
     size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
+    char* value = (char*)malloc(length + 1);
     if (!value) {
         Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
         return token;
@@ -175,9 +161,6 @@ Token lexer_read_string(Lexer* lexer) {
         char c = lexer_peek_char(lexer);
         if (c == '"') {
             break;
-        }
-        if (c == '\\') {
-            lexer_next_char(lexer);
         }
         lexer_next_char(lexer);
     }
@@ -208,14 +191,11 @@ Token lexer_read_char(Lexer* lexer) {
         if (c == '\'') {
             break;
         }
-        if (c == '\\') {
-            lexer_next_char(lexer);
-        }
         lexer_next_char(lexer);
     }
     
     size_t length = lexer->position - start;
-    char* value = (char*)malloc(length - 1);
+    char* value = (char*)malloc(length);
     if (!value) {
         Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
         return token;
@@ -270,7 +250,7 @@ Token lexer_read_operator(Lexer* lexer) {
                 Token token = {TOKEN_OPERATOR, value, 2, lexer->line, lexer->column};
                 return token;
             }
-        }
+        (lexer);
         if (lexer_peek_char(lexer) == '<') {
             lexer_next_char(lexer);
             char* value = (char*)malloc(2);
@@ -304,14 +284,14 @@ Token lexer_read_operator(Lexer* lexer) {
         }
     }
     
-    if (c == '&') {
+    if (c == '-') {
         lexer_next_char(lexer);
-        if (lexer_peek_char(lexer) == '&') {
+        if (lexer_peek_char(lexer) == '>') {
             lexer_next_char(lexer);
             char* value = (char*)malloc(2);
             if (value) {
-                memcpy(value, "&&", 2);
-                Token token = {TOKEN_OPERATOR, value, 2, lexer->line, lexer->column};
+                memcpy(value, "->", 2);
+                Token token = {TOKEN_ARROW, value, 2, lexer->line, lexer->column};
                 return token;
             }
         }
@@ -319,447 +299,26 @@ Token lexer_read_operator(Lexer* lexer) {
     
     if (c == '|') {
         lexer_next_char(lexer);
-        if (lexer_peek_char(lexer) == '|') {
+        if (lexer_peek_char(lexer) == '>') {
             lexer_next_char(lexer);
             char* value = (char*)malloc(2);
             if (value) {
-                memcpy(value, "||", 2);
-                Token token = {TOKEN_OPERATOR, value, 2, lexer->line, lexer->column};
+                memcpy(value, "|>", 2);
+                Token token = {TOKEN_PIPE, value, 2, lexer->line, lexer->column};
                 return token;
             }
         }
     }
     
     lexer_next_char(lexer);
-    size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
-    if (!value) {
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
+    
+    char* value = (char*)malloc(1);
+    if (value) {
+        value[0] = c;
+        value[1] = '\0';
     }
     
-    memcpy(value, lexer->input + start, length);
-    value[length] = '\0';
-    
-    Token token = {TOKEN_OPERATOR, value, length, lexer->line, lexer->column};
-    return token;
-}
-
-Token lexer_read_comment(Lexer* lexer) {
-    lexer_next_char(lexer);
-    
-    if (lexer_peek_char(lexer) == '/') {
-        lexer_next_char(lexer);
-        
-        size_t start = lexer->position;
-        
-        while (lexer->position < lexer->input_length) {
-            char c = lexer_peek_char(lexer);
-            if (c == '\n') {
-                break;
-            }
-            lexer_next_char(lexer);
-        }
-        
-        size_t length = lexer->position - start;
-        char* value = (char*)malloc(length);
-        if (value) {
-            memcpy(value, lexer->input + start, length);
-            value[length] = '\0';
-            Token token = {TOKEN_COMMENT, value, length, lexer->line, lexer->column};
-            return token;
-        }
-    }
-    
-    if (lexer_peek_char(lexer) == '*') {
-        lexer_next_char(lexer);
-        
-        size_t start = lexer->position;
-        
-        while (lexer->position < lexer->input_length) {
-            char c = lexer_peek_char(lexer);
-            if (c == '*' && lexer->position + 1 < lexer->input_length && 
-                lexer->input[lexer->position + 1] == '/') {
-                lexer_next_char(lexer);
-                lexer_next_char(lexer);
-                break;
-            }
-            lexer_next_char(lexer);
-        }
-        
-        size_t length = lexer->position - start;
-        char* value = (char*)malloc(length);
-        if (value) {
-            memcpy(value, lexer->input + start, length);
-            value[length] = '\0';
-            Token token = {TOKEN_COMMENT, value, length, lexer->line, lexer->column};
-            return token;
-        }
-    }
-    
-    Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-    return token;
-}
-
-int lexer_skip_whitespace(Lexer* lexer) {
-    int skipped = 0;
-    
-    while (lexer->position < lexer->input_length) {
-        char c = lexer_peek_char(lexer);
-        if (c == ' ' || c == '\t' || c == '\r') {
-            lexer_next_char(lexer);
-            skipped++;
-        } else if (c == '\n') {
-            lexer_next_char(lexer);
-            lexer->line++;
-            lexer->column = 1;
-            skipped++;
-        } else {
-            break;
-        }
-    }
-    
-    return skipped;
-}
-
-Token lexer_read_preprocessor(Lexer* lexer) {
-    lexer_next_char(lexer);
-    
-    size_t start = lexer->position;
-    
-    while (lexer->position < lexer->input_length) {
-        char c = lexer_peek_char(lexer);
-        if (c == '\n') {
-            break;
-        }
-        lexer_next_char(lexer);
-    }
-    
-    size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
-    if (!value) {
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
-    }
-    
-    memcpy(value, lexer->input + start, length);
-    value[length] = '\0';
-    
-    Token token = {TOKEN_PREPROCESSOR, value, length, lexer->line, lexer->column};
-    return token;
-}
-
-Token lexer_read_macro(Lexer* lexer) {
-    size_t start = lexer->position;
-    
-    while (lexer->position < lexer->input_length) {
-        char c = lexer_peek_char(lexer);
-        if (!isalnum(c) && c != '_') {
-            break;
-        }
-        lexer_next_char(lexer);
-    }
-    
-    size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
-    if (!value) {
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
-    }
-    
-    memcpy(value, lexer->input + start, length);
-    value[length] = '\0';
-    
-    Token token = {TOKEN_MACRO, value, length, lexer->line, lexer->column};
-    return token;
-}
-
-Token lexer_read_template(Lexer* lexer) {
-    lexer_next_char(lexer);
-    
-    size_t start = lexer->position;
-    int depth = 1;
-    
-    while (lexer->position < lexer->input_length && depth > 0) {
-        char c = lexer_peek_char(lexer);
-        if (c == '{') {
-            depth++;
-        } else if (c == '}') {
-            depth--;
-            if (depth == 0) {
-                break;
-            }
-        }
-        lexer_next_char(lexer);
-    }
-    
-    size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
-    if (!value) {
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
-    }
-    
-    memcpy(value, lexer->input + start, length);
-    value[length] = '\0';
-    
-    lexer_next_char(lexer);
-    
-    Token token = {TOKEN_TEMPLATE, value, length, lexer->line, lexer->column};
-    return token;
-}
-
-Token lexer_read_regex(Lexer* lexer) {
-    lexer_next_char(lexer);
-    
-    size_t start = lexer->position;
-    
-    while (lexer->position < lexer->input_length) {
-        char c = lexer_peek_char(lexer);
-        if (c == '/') {
-            break;
-        }
-        if (c == '\\') {
-            lexer_next_char(lexer);
-        }
-        lexer_next_char(lexer);
-    }
-    
-    size_t length = lexer->position - start;
-    char* value = (char*)malloc(length);
-    if (!value) {
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
-    }
-    
-    memcpy(value, lexer->input + start, length);
-    value[length] = '\0';
-    
-    lexer_next_char(lexer);
-    
-    Token token = {TOKEN_REGEX, value, length, lexer->line, lexer->column};
-    return token;
-}
-
-Token lexer_read_heredoc(Lexer* lexer) {
-    size_t start = lexer->position;
-    
-    while (lexer->position < lexer->input_length) {
-        char c = lexer_peek_char(lexer);
-        if (c == '\n') {
-            break;
-        }
-        lexer_next_char(lexer);
-    }
-    
-    size_t delim_length = lexer->position - start;
-    char* delimiter = (char*)malloc(delim_length - 2);
-    if (!delimiter) {
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
-    }
-    
-    memcpy(delimiter, lexer->input + start, delim_length);
-    delimiter[delim_length] = '\0';
-    
-    lexer_next_char(lexer);
-    
-    size_t content_start = lexer->position;
-    
-    while (lexer->position < lexer->input_length) {
-        if (lexer->position + delim_length <= lexer->input_length) {
-            if (memcmp(lexer->input + lexer->position, delimiter, delim_length) == 0) {
-                break;
-            }
-        }
-        lexer_next_char(lexer);
-    }
-    
-    size_t content_length = lexer->position - content_start;
-    char* value = (char*)malloc(content_length);
-    if (!value) {
-        free(delimiter);
-        Token token = {TOKEN_INVALID, NULL, 0, lexer->line, lexer->column};
-        return token;
-    }
-    
-    memcpy(value, lexer->input + content_start, content_length);
-    value[content_length] = '\0';
-    
-    free(delimiter);
-    
-    Token token = {TOKEN_HEREDOC, value, content_length, lexer->line, lexer->column};
-    return token;
-}
-
-Token lexer_read_operator(Lexer* lexer) {
-    char c = lexer_peek_char(lexer);
-    char next = (lexer->position + 1 < lexer->input_length) ? 
-                lexer->input[lexer->position + 1] : '\0';
-    
-    char* value = NULL;
-    size_t length = 0;
-    TokenType type = TOKEN_OPERATOR;
-    
-    switch (c) {
-        case '+':
-            if (next == '+') {
-                value = strdup("++");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '=') {
-                value = strdup("+=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("+");
-                length = 1;
-            }
-            break;
-        case '-':
-            if (next == '-') {
-                value = strdup("--");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '=') {
-                value = strdup("-=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '>') {
-                value = strdup("->");
-                length = 2;
-                lexer_next_char(lexer);
-                type = TOKEN_ARROW;
-            } else {
-                value = strdup("-");
-                length = 1;
-            }
-            break;
-        case '*':
-            if (next == '=') {
-                value = strdup("*=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("*");
-                length = 1;
-            }
-            break;
-        case '/':
-            if (next == '=') {
-                value = strdup("/=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("/");
-                length = 1;
-            }
-            break;
-        case '%':
-            if (next == '=') {
-                value = strdup("%=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("%");
-                length = 1;
-            }
-            break;
-        case '=':
-            if (next == '=') {
-                value = strdup("==");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '>') {
-                value = strdup("=>");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("=");
-                length = 1;
-            }
-            break;
-        case '!':
-            if (next == '=') {
-                value = strdup("!=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("!");
-                length = 1;
-            }
-            break;
-        case '<':
-            if (next == '=') {
-                value = strdup("<=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '<') {
-                value = strdup("<<");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("<");
-                length = 1;
-            }
-            break;
-        case '>':
-            if (next == '=') {
-                value = strdup(">=");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '>') {
-                value = strdup(">>");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup(">");
-                length = 1;
-            }
-            break;
-        case '&':
-            if (next == '&') {
-                value = strdup("&&");
-                length = 2;
-                lexer_next_char(lexer);
-            } else {
-                value = strdup("&");
-                length = 1;
-            }
-            break;
-        case '|':
-            if (next == '|') {
-                value = strdup("||");
-                length = 2;
-                lexer_next_char(lexer);
-            } else if (next == '>') {
-                value = strdup("|>");
-                length = 2;
-                lexer_next_char(lexer);
-                type = TOKEN_PIPE;
-            } else {
-                value = strdup("|");
-                length = 1;
-            }
-            break;
-        case '^':
-            value = strdup("^");
-            length = 1;
-            break;
-        case '~':
-            value = strdup("~");
-            length = 1;
-            break;
-        default:
-            value = strdup("");
-            length = 0;
-            type = TOKEN_INVALID;
-            break;
-    }
-    
-    lexer_next_char(lexer);
-    
-    Token token = {type, value, length, lexer->line, lexer->column};
+    Token token = {TOKEN_OPERATOR, value, 1, lexer->line, lexer->column};
     return token;
 }
 
@@ -783,6 +342,10 @@ Token lexer_next_token(Lexer* lexer) {
     
     if (c == '"') {
         return lexer_read_string(lexer);
+    }
+    
+    if (c == '\'') {
+        return lexer_read_char(lexer);
     }
     
     if (c == '+' || c == '-' || c == '*' || c == '/' || c == '%' ||
