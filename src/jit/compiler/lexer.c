@@ -250,7 +250,7 @@ Token lexer_read_operator(Lexer* lexer) {
                 Token token = {TOKEN_OPERATOR, value, 2, lexer->line, lexer->column};
                 return token;
             }
-        (lexer);
+        }
         if (lexer_peek_char(lexer) == '<') {
             lexer_next_char(lexer);
             char* value = (char*)malloc(2);
