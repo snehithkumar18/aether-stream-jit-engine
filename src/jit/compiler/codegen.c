@@ -112,7 +112,11 @@ void emit_array_access(ArrayAccess* access) {
         access->index && 
         access->index->type == NODE_LITERAL) {
         
-        int64_t index = ((LiteralExpr*)access->index->data)->value;
+        char* index_str = ((LiteralExpr*)access->index->data)->value;
+        int64_t index = 0;
+        if (index_str) {
+            index = (int64_t)(intptr_t)index_str;
+        }
         size_t offset = index * sizeof(int64_t);
         
         uint8_t* addr = access->base_addr + offset;
