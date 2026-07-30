@@ -99,12 +99,12 @@ int parser_expect(Parser* parser, TokenType type) {
     return 0;
 }
 
-bool handle_token(Parser* parser, Token* token) {
+int handle_token(Parser* parser, Token* token) {
     ParserState new_state = TRANSITION_TABLE[parser->state][token->type];
     
     if (new_state == STATE_INVALID) {
         if (parser->state == STATE_ERROR) {
-            return false;
+            return 0;
         }
         new_state = STATE_ERROR;
         if (parser->current_node) {
@@ -114,7 +114,7 @@ bool handle_token(Parser* parser, Token* token) {
     }
     
     parser->state = new_state;
-    return true;
+    return 1;
 }
 
 ASTNode* create_node(NodeType type) {
