@@ -183,12 +183,6 @@ typedef struct Parser {
     Token* token;
 } Parser;
 
-typedef struct TokenStream {
-    Token* tokens;
-    size_t count;
-    size_t position;
-} TokenStream;
-
 Parser* parser_create(Lexer* lexer);
 void parser_destroy(Parser* parser);
 ASTNode* parser_parse(Parser* parser);
