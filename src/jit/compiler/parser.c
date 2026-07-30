@@ -70,8 +70,6 @@ Token* parser_peek_token(Parser* parser) {
         return NULL;
     }
     
-    Token token = lexer_peek_token(parser->lexer);
-    
     if (!parser->tokens) {
         parser->tokens = (TokenStream*)malloc(sizeof(TokenStream));
         parser->tokens->tokens = NULL;
@@ -79,7 +77,13 @@ Token* parser_peek_token(Parser* parser) {
         parser->tokens->position = 0;
     }
     
-    return &token;
+    Token token = lexer_peek_token(parser->lexer);
+    parser->tokens->tokens = (Token*)realloc(parser->tokens->tokens, 
+                                          (parser->tokens->count + 1) * sizeof(Token));
+    parser->tokens->tokens[parser->tokens->count] = token;
+    parser->tokens->count++;
+    
+    return &parser->tokens->tokens[parser->tokens->count - 1];
 }
 
 int parser_match(Parser* parser, TokenType type) {

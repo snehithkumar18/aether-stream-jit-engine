@@ -4,6 +4,25 @@
 #include "lexer.h"
 #include <stddef.h>
 
+typedef enum DataType {
+    TYPE_VOID,
+    TYPE_INT,
+    TYPE_FLOAT,
+    TYPE_DOUBLE,
+    TYPE_CHAR,
+    TYPE_STRING,
+    TYPE_BOOL,
+    TYPE_ARRAY,
+    TYPE_STRUCT,
+    TYPE_POINTER
+} DataType;
+
+typedef struct TokenStream {
+    Token* tokens;
+    size_t count;
+    size_t position;
+} TokenStream;
+
 typedef enum NodeType {
     NODE_INVALID,
     NODE_PROGRAM,
@@ -31,6 +50,18 @@ typedef enum NodeType {
     NODE_CLASS,
     NODE_INTERFACE,
     NODE_ENUM,
+    NODE_STRUCT,
+    NODE_UNION,
+    NODE_TYPEDEF,
+    NODE_CONST,
+    NODE_STATIC,
+    NODE_VOLATILE,
+    NODE_EXTERN,
+    NODE_INLINE,
+    NODE_REGISTER,
+    NODE_RESTRICT,
+    NODE_ATOMIC,
+    NODE_THREAD_LOCAL,
     NODE_BINARY,
     NODE_UNARY,
     NODE_LITERAL,
@@ -136,6 +167,7 @@ typedef struct ArrayAccess {
 } ArrayAccess;
 
 typedef enum ParserState {
+    STATE_INVALID,
     STATE_INIT,
     STATE_PARSING_EXPR,
     STATE_PARSING_STMT,
