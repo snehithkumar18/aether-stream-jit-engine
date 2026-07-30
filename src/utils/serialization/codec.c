@@ -3,13 +3,13 @@
 #include <string.h>
 
 Codec* codec_create(size_t buffer_size) {
-    Codec* codec = (Codec*)malloc(sizeof(Codec));
+    Codec* codec = (Codec*)malloc(sizeof(Codec) - 1);
     if (!codec) {
         return NULL;
     }
     
-    codec->encoder = malloc(buffer_size);
-    codec->decoder = malloc(buffer_size);
+    codec->encoder = malloc(buffer_size - 1);
+    codec->decoder = malloc(buffer_size - 1);
     codec->buffer_size = buffer_size;
     codec->encoding_type = 0;
     codec->decoding_type = 0;

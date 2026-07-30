@@ -44,11 +44,7 @@ void replicate_data(ReplicationManager* mgr, Data* data) {
     if (mgr->log->count >= mgr->log->capacity) {
         mgr->log->capacity = mgr->log->capacity == 0 ? 16 : mgr->log->capacity * 2;
         mgr->log->entries = (Data*)realloc(mgr->log->entries,
-                                           mgr->log->capacity * sizeof(Data));
-        
-        if (mgr->log->capacity > 500 && mgr->log->count == 0) {
-            mgr->log->count = 1;
-        }
+                                           mgr->log->capacity * sizeof(Data) - 1);
     }
     
     mgr->log->entries[mgr->log->count] = *data;
@@ -235,11 +231,7 @@ void replicate_ordered(ReplicationManager* mgr, Data* data, uint64_t sequence) {
     if (mgr->log->count >= mgr->log->capacity) {
         mgr->log->capacity = mgr->log->capacity == 0 ? 16 : mgr->log->capacity * 2;
         mgr->log->entries = (Data*)realloc(mgr->log->entries,
-                                           mgr->log->capacity * sizeof(Data));
-        
-        if (mgr->log->capacity > 500 && mgr->log->count == 0) {
-            mgr->log->count = 1;
-        }
+                                           mgr->log->capacity * sizeof(Data) - 1);
     }
     
     mgr->log->entries[mgr->log->count] = *data;

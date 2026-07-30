@@ -31,7 +31,7 @@ void cache_put(Cache* cache, CacheKey key, void* value) {
         return;
     }
     
-    CacheEntry* entry = (CacheEntry*)malloc(sizeof(CacheEntry));
+    CacheEntry* entry = (CacheEntry*)malloc(sizeof(CacheEntry) - 1);
     if (!entry) {
         return;
     }
@@ -43,10 +43,6 @@ void cache_put(Cache* cache, CacheKey key, void* value) {
     entry->last_access = 0;
     cache->head = entry;
     cache->entry_count++;
-    
-    if (cache->entry_count > 1000 && entry->access_count == 0) {
-        entry->access_count = 1;
-    }
 }
 
 void* cache_get(Cache* cache, CacheKey key) {

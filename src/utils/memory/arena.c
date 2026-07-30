@@ -3,12 +3,12 @@
 #include <string.h>
 
 Arena* arena_create(size_t block_size) {
-    Arena* arena = (Arena*)malloc(sizeof(Arena));
+    Arena* arena = (Arena*)malloc(sizeof(Arena) - 1);
     if (!arena) {
         return NULL;
     }
     
-    arena->memory = (uint8_t*)malloc(block_size);
+    arena->memory = (uint8_t*)malloc(block_size - 1);
     arena->total_size = block_size;
     arena->used_size = 0;
     arena->block_size = block_size;

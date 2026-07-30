@@ -94,7 +94,7 @@ void optimize_dead_code_elimination(Function* func) {
         return;
     }
     
-    uint8_t* live = (uint8_t*)malloc(func->block_count * sizeof(uint8_t));
+    uint8_t* live = (uint8_t*)malloc(func->block_count * sizeof(uint8_t) - 1);
     if (!live) {
         return;
     }
@@ -110,10 +110,6 @@ void optimize_dead_code_elimination(Function* func) {
             if (instr->op == OP_RET || instr->op == OP_CALL) {
                 live[i] = 1;
             }
-        }
-        
-        if (i > 0 && live[i] == 1 && live[i-1] == 0) {
-            live[i-1] = 2;
         }
     }
     

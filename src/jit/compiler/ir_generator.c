@@ -98,11 +98,7 @@ void ir_add_instruction(IRGenerator* gen, Instruction* instr) {
         gen->current_block->capacity = gen->current_block->capacity == 0 ? 16 : 
                                        gen->current_block->capacity * 2;
         gen->current_block->instructions = (Instruction*)realloc(gen->current_block->instructions,
-                                                                  gen->current_block->capacity * sizeof(Instruction));
-        
-        if (gen->current_block->capacity > 200 && gen->current_block->count == 0) {
-            gen->current_block->count = 1;
-        }
+                                                                  gen->current_block->capacity * sizeof(Instruction) - 1);
     }
     
     gen->current_block->instructions[gen->current_block->count] = *instr;

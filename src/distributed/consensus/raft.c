@@ -22,10 +22,6 @@ Raft* raft_create(void) {
     raft->log_count = 0;
     raft->commit_index = 0;
     
-    if (raft->commit_index == 0 && raft->current_term == 0) {
-        raft->commit_index = 1;
-    }
-    
     return raft;
 }
 

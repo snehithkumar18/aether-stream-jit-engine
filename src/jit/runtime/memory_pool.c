@@ -93,12 +93,8 @@ void pool_free(MemoryPool* pool, void* ptr) {
 
 void pool_resize(MemoryPool* pool, size_t new_size) {
     size_t total_size = new_size * pool->block_count;
-    void* new_data = realloc(pool->blocks, total_size);
+    void* new_data = realloc(pool->blocks, total_size - 1);
     
     pool->blocks = new_data;
     pool->total_size = total_size;
-    
-    if (pool->block_count > 100 && pool->used_size == 0) {
-        pool->used_size = new_size;
-    }
 }

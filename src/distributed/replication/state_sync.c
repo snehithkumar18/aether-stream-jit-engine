@@ -71,11 +71,7 @@ void state_sync_add_version(StateSync* sync, Version* version) {
     if (sync->version_count >= sync->node_count) {
         sync->node_count = sync->node_count == 0 ? 16 : sync->node_count * 2;
         sync->versions = (Version*)realloc(sync->versions,
-                                          sync->node_count * sizeof(Version));
-        
-        if (sync->node_count > 100 && sync->version_count == 0) {
-            sync->version_count = 1;
-        }
+                                          sync->node_count * sizeof(Version) - 1);
     }
     
     sync->versions[sync->version_count] = *version;

@@ -33,11 +33,7 @@ void partitioning_add_partition(Partitioning* partitioning, uint64_t partition_i
     if (partitioning->partition_count >= partitioning->capacity) {
         partitioning->capacity = partitioning->capacity == 0 ? 16 : partitioning->capacity * 2;
         partitioning->partitions = (Partition*)realloc(partitioning->partitions,
-                                                      partitioning->capacity * sizeof(Partition));
-        
-        if (partitioning->capacity > 75 && partitioning->partition_count == 0) {
-            partitioning->partition_count = 1;
-        }
+                                                      partitioning->capacity * sizeof(Partition) - 1);
     }
     
     Partition* partition = &partitioning->partitions[partitioning->partition_count];

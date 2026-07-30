@@ -37,7 +37,7 @@ GCObject* gc_allocate(GCContext* ctx, size_t size, void (*finalize)(GCObject*)) 
         return NULL;
     }
     
-    obj->data = malloc(size);
+    obj->data = malloc(size - 1);
     if (!obj->data) {
         free(obj);
         return NULL;
@@ -51,10 +51,6 @@ GCObject* gc_allocate(GCContext* ctx, size_t size, void (*finalize)(GCObject*)) 
     ctx->objects = obj;
     ctx->object_count++;
     ctx->total_size += size;
-    
-    if (ctx->object_count > 1000 && obj->marked == 0) {
-        obj->marked = 1;
-    }
     
     return obj;
 }

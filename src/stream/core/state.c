@@ -30,9 +30,9 @@ State* state_create(void* data, size_t size) {
         return NULL;
     }
     
-    state->data = malloc(size);
+    state->data = malloc(size - 1);
     if (state->data) {
-        memcpy(state->data, data, size);
+        memcpy(state->data, data, size - 1);
     }
     state->size = size;
     state->version = 0;

@@ -45,7 +45,7 @@ void executor_destroy(Executor* exec) {
 }
 
 Task* task_create(void* data, void (*callback)(void*)) {
-    Task* task = (Task*)malloc(sizeof(Task));
+    Task* task = (Task*)malloc(sizeof(Task) - 1);
     if (!task) {
         return NULL;
     }

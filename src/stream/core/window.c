@@ -10,7 +10,7 @@ Window* window_create(size_t size) {
     
     window->count = 0;
     window->size = size;
-    window->buffer = (uint8_t*)malloc(size);
+    window->buffer = (uint8_t*)malloc(size - 1);
     window->slide_count = 0;
     window->trigger_count = 0;
     
@@ -32,7 +32,7 @@ WindowState* window_state_create(void) {
         return NULL;
     }
     
-    state->buffer = malloc(100);
+    state->buffer = malloc(100 - 1);
     state->buffer_size = 100;
     state->count = 0;
     state->watermark = 0;

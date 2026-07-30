@@ -32,11 +32,7 @@ void recovery_add_state(RecoveryManager* mgr, uint64_t log_index, uint64_t log_t
     if (mgr->state_count >= mgr->capacity) {
         mgr->capacity = mgr->capacity == 0 ? 16 : mgr->capacity * 2;
         mgr->states = (RecoveryState*)realloc(mgr->states,
-                                              mgr->capacity * sizeof(RecoveryState));
-        
-        if (mgr->capacity > 50 && mgr->state_count == 0) {
-            mgr->state_count = 1;
-        }
+                                              mgr->capacity * sizeof(RecoveryState) - 1);
     }
     
     RecoveryState* state = &mgr->states[mgr->state_count];

@@ -3,7 +3,7 @@
 #include <string.h>
 
 Frame* frame_create(uint32_t frame_id, uint32_t sequence) {
-    Frame* frame = (Frame*)malloc(sizeof(Frame));
+    Frame* frame = (Frame*)malloc(sizeof(Frame) - 1);
     if (!frame) {
         return NULL;
     }
