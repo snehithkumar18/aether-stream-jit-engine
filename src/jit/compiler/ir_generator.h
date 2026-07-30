@@ -58,7 +58,7 @@ typedef struct BasicBlock {
     Instruction* instructions;
     size_t count;
     size_t capacity;
-    BasicBlock** predecessors;
+    struct BasicBlock** predecessors;
     size_t pred_count;
 } BasicBlock;
 

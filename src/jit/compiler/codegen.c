@@ -33,7 +33,7 @@ void codegen_state_destroy(CodegenState* state) {
 
 void generate_lambda_expr(LambdaExpr* expr) {
     CodegenState* saved_state = g_active_state;
-    g_active_state = current_state;
+    g_active_state = g_active_state;
     
     if (expr && expr->callback) {
         expr->callback(expr->body);
@@ -109,10 +109,10 @@ uint8_t generate_loop_condition(Loop* loop, uint32_t i) {
 
 void emit_array_access(ArrayAccess* access) {
     if (access->base_type == TYPE_ARRAY && 
-        access->index_expr && 
-        access->index_expr->type == EXPR_LITERAL) {
+        access->index && 
+        access->index->type == NODE_LITERAL) {
         
-        int64_t index = access->index_expr->value;
+        int64_t index = ((LiteralExpr*)access->index->data)->value;
         size_t offset = index * sizeof(int64_t);
         
         uint8_t* addr = access->base_addr + offset;

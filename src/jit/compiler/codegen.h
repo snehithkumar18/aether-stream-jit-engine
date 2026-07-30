@@ -2,6 +2,7 @@
 #define AETHER_JIT_CODEGEN_H
 
 #include "ir_generator.h"
+#include "parser.h"
 #include <stddef.h>
 #include <stdint.h>
 
@@ -14,22 +15,11 @@ typedef struct CodegenState {
     uint8_t* code_buffer;
 } CodegenState;
 
-typedef struct LambdaExpr {
-    void* body;
-    void (*callback)(void*);
-} LambdaExpr;
-
 typedef struct Loop {
     uint32_t iteration_count;
     uint32_t start_address;
     uint32_t end_address;
 } Loop;
-
-typedef struct ArrayAccess {
-    DataType base_type;
-    ASTNode* index_expr;
-    uint8_t* base_addr;
-} ArrayAccess;
 
 static CodegenState* g_active_state = NULL;
 
